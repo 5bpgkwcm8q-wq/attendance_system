@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход в систему</title>
+    <!-- Подключаем стильный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f0e6;       /* Кремовый фон */
+            --text: #2c2c2c;     /* Темно-серый */
+            --accent: #d86c4f;   /* Терракотовый */
+            --card: #ffffff;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Manrope', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-card {
+            background: var(--card);
+            padding: 50px 40px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            font-weight: 800;
+            font-size: 28px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+        }
+        input {
+            width: 100%;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            font-family: 'Manrope', sans-serif;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: #fafafa;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        button {
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Manrope', sans-serif;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #c05a3e;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1>Вход в систему посещаемости</h1>
+        
+        {% if form.errors %}
+            <div class="error">Неверный логин или пароль</div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+    </div>
+
+</body>
+</html>

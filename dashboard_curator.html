@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Журнал</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #f5f0e6; --text: #2c2c2c; --accent: #d86c4f; --card-bg: #ffffff; --red: #f44336; --green: #4caf50; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Manrope', sans-serif; margin: 0; padding: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        h1 { font-weight: 800; font-size: 32px; letter-spacing: -1px; margin: 0; }
+        
+        .btn-logout { background: transparent; border: 2px solid var(--text); padding: 10px 20px; border-radius: 50px; color: var(--text); font-weight: 700; transition: 0.3s; font-family: inherit; font-size: 16px; cursor: pointer;}
+        .btn-logout:hover { background: var(--text); color: var(--bg); }
+        
+        .card { background: var(--card-bg); border-radius: 30px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px;}
+        
+        h2 { font-size: 24px; font-weight: 800; margin-top: 0; margin-bottom: 20px;}
+        input, select { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 15px; font-family: inherit; box-sizing: border-box; font-size: 16px; background: white;}
+        button { background: var(--text); color: white; border: none; padding: 15px 30px; border-radius: 50px; font-weight: 700; font-size: 16px; cursor: pointer; width: 100%; transition: 0.3s; font-family: inherit;}
+        button:hover { opacity: 0.8; }
+        
+        .messages { padding: 15px; border-radius: 15px; margin-bottom: 20px; font-weight: 700; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+
+        .filter-bar { display: flex; gap: 15px; margin-bottom: 20px; background: var(--card-bg); padding: 20px; border-radius: 20px; align-items: center; }
+        .filter-bar select { margin-bottom: 0; }
+        .filter-bar button { width: auto; padding: 15px 30px; }
+
+        /* Стили для поиска */
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: var(--accent);
+        }
+
+        /* --- СТИЛИ ДЛЯ ЖУРНАЛА --- */
+        .journal-table { min-width: 800px; font-size: 0.9rem; border-collapse: collapse; margin-top: 0; }
+        .journal-table th, .journal-table td { padding: 4px; border: 1px solid #ddd; text-align: center; vertical-align: middle; width: 40px; }
+        .journal-table th:first-child, .journal-table td:first-child { min-width: 30px; width: 30px; text-align: center; padding-left: 5px; }
+        .journal-table th:nth-child(2), .journal-table td:nth-child(2) { text-align: left; padding-left: 15px; min-width: 180px; }
+        .journal-table th { font-size: 12px; padding: 10px 5px; background-color: #fafafa; color: var(--text); }
+        
+        .status-select { width: 100%; padding: 2px 0; border: none; background: transparent; font-weight: 900; font-size: 14px; cursor: pointer; outline: none; text-align: center; appearance: none; -webkit-appearance: none; -moz-appearance: none; color: #000; }
+
+        .color-picker { cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 2px; }
+        .color-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #999; transition: 0.2s; }
+        .color-dot:hover { transform: scale(1.2); }
+
+        .dot-red { background-color: #ff6b6b !important; }
+        .dot-blue { background-color: #4dabf7 !important; }
+        .dot-green { background-color: #51cf66 !important; }
+        .dot-yellow { background-color: #fcc419 !important; }
+        .dot-none { background-color: #e0e0e0 !important; }
+
+        .legend-box { display: flex; gap: 15px; flex-wrap: wrap; padding: 15px; background: #fafafa; border-radius: 15px; margin-bottom: 15px; font-size: 14px; font-weight: bold; }
+        .legend-item { display: flex; align-items: center; gap: 8px; }
+        .legend-color { width: 20px; height: 20px; border-radius: 5px; border: 1px solid #ccc; }
+
+        .sunday-cell { background-color: #e0e0e0 !important; font-weight: bold; color: #777; font-size: 12px; }
+        .sunday-th { background-color: #d4d4d4 !important; color: #666; }
+
+        .headman-badge {
+            background-color: #d86c4f;
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 8px;
+            font-weight: bold;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        .curator-box {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .headman-form {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+    </style>
+</head>
+<body>
+    <input type="hidden" id="data-month" value="{{ current_month }}">
+    <input type="hidden" id="data-year" value="{{ current_year }}">
+
+    <div class="header">
+        <h1>{{ role_title }}</h1>
+        <form method="post" action="{% url 'logout' %}" style="margin: 0;">
+            {% csrf_token %}
+            <button type="submit" class="btn-logout">Выйти</button>
+        </form>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="messages {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Фильтр по месяцам -->
+    <form method="get" class="filter-bar">
+        <label style="font-weight: 800;">Выберите период:</label>
+        <select name="month">
+            {% for num, name in months.items %}
+                <option value="{{ num }}" {% if num == current_month %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+        <select name="year">
+            {% for y in years %}
+                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" style="background: var(--accent);">Показать</button>
+    </form>
+
+    <!-- ЖУРНАЛ -->
+    <div class="card" style="margin-bottom: 30px;">
+        {% if group_curator %}
+        <div class="curator-box">
+            <b>Куратор группы:</b> {{ group_curator.full_name }}
+        </div>
+        {% endif %}
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0;">Группа: {{ group_name }} ({{ students|length }} чел.)</h2>
+            <button onclick="saveJournal(this)" style="width: auto; padding: 10px 20px; background: var(--accent); font-size: 14px;">Сохранить изменения</button>
+        </div>
+
+        <!-- ПОЛЕ ПОИСКА -->
+        <input type="text" class="search-box" placeholder="🔍 Поиск по ФИО..." onkeyup="searchStudentCurator(this)">
+
+        <div class="headman-form">
+            <span style="font-weight: bold;">Староста группы:</span>
+            <form method="post" style="display: flex; gap: 10px; margin: 0; align-items: center;">
+                {% csrf_token %}
+                <select name="student_id" style="margin: 0; width: 200px;">
+                    <option value="">— Нет старосты —</option>
+                    {% for row in students %}
+                        <option value="{{ row.student.id }}" {% if current_headman and current_headman.user_id == row.student.user_id %}selected{% endif %}>
+                            {{ row.student.full_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="set_headman_curator" style="width: auto; padding: 10px 20px; font-size: 14px;">Назначить</button>
+            </form>
+        </div>
+
+        <div class="legend-box">
+            <div class="legend-item"><div class="legend-color" style="background: #ffcccc;"></div>4 — Неуважительная (красный)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #cce5ff;"></div>2 — Уважительная (синий)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #d4edda;"></div>6 — По болезни (зеленый)</div>
+            <div class="legend-item"><div class="legend-color" style="background: #fff3cd;"></div>8 — Другое (желтый)</div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="journal-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th style="min-width: 150px;">ФИО</th>
+                        {% for day in days %}
+                            <th class="{% if day.is_sunday %}sunday-th{% endif %}">{{ day.num }}</th>
+                        {% endfor %}
+                        <th>Пропущено</th>
+                        <th>Уваж.</th>
+                        <th>Неуваж.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in students %}
+                    <tr class="student-row">
+                        <td style="font-weight: bold; text-align: center;">{{ forloop.counter }}</td>
+                        <td style="font-weight: bold;">
+                            {{ row.student.full_name }}
+                            {% if row.invalid_missed > 36 %}
+                                <span style="color: #d32f2f; font-size: 20px; margin-left: 5px; cursor: help;" title="Больше 36 часов неуважительных пропусков!">❗</span>
+                            {% endif %}
+                            {% if row.is_headman %}
+                                <span class="headman-badge">Староста</span>
+                            {% endif %}
+                        </td>
+                        
+                        {% for cell in row.cells %}
+                            <td class="attendance-cell {% if cell.is_sunday %}sunday-cell{% endif %}" 
+                                data-student="{{ row.student.id }}" 
+                                data-day="{{ cell.day }}">
+                                
+                                {% if cell.is_sunday %}
+                                    Вых
+                                {% else %}
+                                    <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                        <select class="status-select" onchange="updateStatus(this)">
+                                            <option value="0" {% if cell.status == '0' %}selected{% endif %}></option>
+                                            <option value="1" {% if cell.status == '1' %}selected{% endif %}>✔</option>
+                                            <option value="2" {% if cell.status == '2' %}selected{% endif %}>2</option>
+                                            <option value="4" {% if cell.status == '4' %}selected{% endif %}>4</option>
+                                            <option value="6" {% if cell.status == '6' %}selected{% endif %}>6</option>
+                                            <option value="8" {% if cell.status == '8' %}selected{% endif %}>8</option>
+                                        </select>
+                                        
+                                        <div class="color-picker" 
+                                             data-current-color="{{ cell.color }}"
+                                             onclick="cycleColor(this)">
+                                            <div class="color-dot 
+                                                {% if cell.color == 'red' %}dot-red
+                                                {% elif cell.color == 'blue' %}dot-blue
+                                                {% elif cell.color == 'green' %}dot-green
+                                                {% elif cell.color == 'yellow' %}dot-yellow
+                                                {% else %}dot-none{% endif %}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        <td style="font-weight: bold; color: var(--red);">{{ row.total_missed }}</td>
+                        <td style="font-weight: bold; color: var(--green);">{{ row.valid_missed }}</td>
+                        <td style="font-weight: bold; color: var(--red);">{{ row.invalid_missed }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(selectElement) {}
+
+        let colorCycle = ['none', 'red', 'blue', 'green', 'yellow'];
+        
+        function cycleColor(div) {
+            let currentColor = div.getAttribute('data-current-color');
+            let currentIndex = colorCycle.indexOf(currentColor);
+            let nextIndex = (currentIndex + 1) % colorCycle.length;
+            let nextColor = colorCycle[nextIndex];
+            
+            div.setAttribute('data-current-color', nextColor);
+            
+            let dot = div.querySelector('.color-dot');
+            dot.className = 'color-dot';
+            
+            if (nextColor === 'red') dot.classList.add('dot-red');
+            else if (nextColor === 'blue') dot.classList.add('dot-blue');
+            else if (nextColor === 'green') dot.classList.add('dot-green');
+            else if (nextColor === 'yellow') dot.classList.add('dot-yellow');
+            else dot.classList.add('dot-none');
+            
+            let cell = div.closest('td');
+            cell.style.backgroundColor = (nextColor !== 'none') ? getLightColor(nextColor) : '';
+        }
+
+        function getLightColor(color) {
+            if (color === 'red') return '#ffcccc';
+            if (color === 'blue') return '#cce5ff';
+            if (color === 'green') return '#d4edda';
+            if (color === 'yellow') return '#fff3cd';
+            return '';
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.color-picker').forEach(picker => {
+                let color = picker.getAttribute('data-current-color');
+                let cell = picker.closest('td');
+                if (color !== 'none') {
+                    cell.style.backgroundColor = getLightColor(color);
+                }
+            });
+        });
+
+        // Функция поиска для куратора
+        function searchStudentCurator(input) {
+            let filter = input.value.toLowerCase();
+            let card = input.closest('.card');
+            let table = card.querySelector('.journal-table');
+            let rows = table.getElementsByClassName('student-row');
+
+            for (let i = 0; i < rows.length; i++) {
+                let nameCell = rows[i].getElementsByTagName("td")[1];
+                if (nameCell) {
+                    let txtValue = nameCell.textContent || nameCell.innerText;
+                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function saveJournal(button) {
+            let card = button.closest('.card');
+            let table = card.querySelector('.journal-table');
+            
+            let updates = [];
+            table.querySelectorAll('.attendance-cell').forEach(cell => {
+                if (cell.classList.contains('sunday-cell')) return;
+
+                let select = cell.querySelector('.status-select');
+                let picker = cell.querySelector('.color-picker');
+                
+                let status = select ? select.value : '0';
+                let color = picker ? picker.getAttribute('data-current-color') : 'none';
+                
+                if (status !== '0' || color !== 'none') {
+                    updates.push({
+                        student_id: cell.getAttribute('data-student'),
+                        day: cell.getAttribute('data-day'),
+                        status: status,
+                        color: color
+                    });
+                }
+            });
+
+            if (updates.length === 0) {
+                alert('Нет изменений для сохранения.');
+                return;
+            }
+
+            fetch('/save_journal_marks/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ 
+                    updates: updates,
+                    month: document.getElementById('data-month').value,
+                    year: document.getElementById('data-year').value
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Данные успешно сохранены!');
+                    location.reload();
+                } else {
+                    alert('Ошибка при сохранении: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Ошибка:', error));
+        }
+    </script>
+
+</body>
+</html>
